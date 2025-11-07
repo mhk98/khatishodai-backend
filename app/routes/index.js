@@ -8,6 +8,7 @@ const BrandRoutes = require("../modules/brand/brand.routes");
 const CartRoutes = require("../modules/cart/cart.routes");
 const OrderRoutes = require("../modules/order/order.routes");
 const ReviewRoutes = require("../modules/review/review.routes");
+const BlogRoutes = require("../modules/blog/blog.routes");
 
 const router = express.Router();
 
@@ -51,6 +52,10 @@ const moduleRoutes = [
   {
     path: "/review",
     route: ReviewRoutes,
+  },
+  {
+    path: "/blog",
+    route: BlogRoutes,
   },
 ];
 

@@ -85,8 +85,6 @@
 //   return Order;
 // };
 
-
-
 module.exports = (sequelize, DataTypes) => {
   const Order = sequelize.define(
     "Order",
@@ -168,13 +166,13 @@ module.exports = (sequelize, DataTypes) => {
 
           let nextNumber = 1;
           if (lastOrder && lastOrder.id) {
-            const lastNumber = parseInt(lastOrder.id.replace("KT", ""), 10);
+            const lastNumber = parseInt(lastOrder.id.replace("KS", ""), 10);
             if (!isNaN(lastNumber)) {
               nextNumber = lastNumber + 1;
             }
           }
 
-          order.id = "KT" + String(nextNumber).padStart(3, "0");
+          order.id = "KS" + String(nextNumber).padStart(3, "0");
         },
       },
     }

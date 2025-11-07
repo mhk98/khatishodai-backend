@@ -33,6 +33,7 @@ db.review = require("../app/modules/review/review.model")(
   db.sequelize,
   DataTypes
 );
+db.blog = require("../app/modules/blog/blog.model")(db.sequelize, DataTypes);
 
 // // Define associations
 // db.purchase.hasOne(db.accounting, { foreignKey: "purchaseId" });

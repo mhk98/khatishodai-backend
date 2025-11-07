@@ -50,9 +50,19 @@ const upload = multer({
   fileFilter: fileFilter,
 });
 
+const doubleUpload = multer({
+  storage: storage,
+  limits: { fileSize: 5000000 }, // 5 MB limit
+  fileFilter: fileFilter,
+}).fields([
+  { name: "image", maxCount: 1 },
+  { name: "image1", maxCount: 1 },
+]);
+
 module.exports = {
   uploadSingle,
   uploadMultiple,
   uploadProfileImage,
   upload,
+  doubleUpload,
 };
