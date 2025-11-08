@@ -24,7 +24,7 @@ router.get("/all", ProductController.getAllFromDBWithoutQuery);
 router.get("/arrival", ProductController.getArrivalDataById);
 router.get("/:id", ProductController.getDataById);
 router.delete("/:id", ProductController.deleteIdFromDB);
-router.patch(
+router.put(
   "/:id",
   upload.fields([
     { name: "default_image", maxCount: 1 }, // Single image

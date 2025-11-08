@@ -154,57 +154,99 @@ const deleteIdFromDB = async (id) => {
   return result;
 };
 
-const updateOneFromDB = async (id, data, images, image) => {
-  const { brand_id } = data;
+// const updateOneFromDB = async (id, data, images, image) => {
+//   const { brand_id } = data;
 
-  // const brand = await Brand.findOne({
-  //   where: {
-  //     id: brand_id,
-  //   },
-  // });
+//   // const brand = await Brand.findOne({
+//   //   where: {
+//   //     id: brand_id,
+//   //   },
+//   // });
 
-  // const info = {
-  //   brand_title: brand.title,
-  //   data,
-  // };
+//   // const info = {
+//   //   brand_title: brand.title,
+//   //   data,
+//   // };
 
-  if (!images || images.length === 0) {
-    throw new Error("No files uploaded");
+//   if (!images || images.length === 0) {
+//     throw new Error("No files uploaded");
+//   }
+
+//   // ✅ images is already an array of paths
+//   const imageUrls = images.map((file) => file);
+
+//   const {
+//     title,
+//     short_description,
+//     description,
+//     weight,
+//     purchase_price,
+//     price,
+//     category_id,
+//     subCategoryItem_id,
+//   } = data;
+
+//   const info = {
+//     title,
+//     short_description,
+//     description,
+//     weight,
+//     purchase_price,
+//     price,
+//     category_id,
+//     subCategoryItem_id,
+//     default_image: image, // ✅ Store image directly
+//     gallery_images: JSON.stringify(imageUrls), // ✅ Convert array to string
+//     product_type: "arrival",
+//   };
+
+//   const result = await Product.update(info, {
+//     where: {
+//       id: id,
+//     },
+//   });
+
+//   return result;
+// };
+
+
+const updateOneFromDB = async (id, data, image, images) => {
+  // ✅ প্রথমে পুরোনো product ডাটাটা খুঁজে বের কর
+  const existingProduct = await Product.findByPk(id);
+  if (!existingProduct) {
+    throw new Error("Product not found");
   }
 
-  // ✅ images is already an array of paths
-  const imageUrls = images.map((file) => file);
+  // ✅ নতুন ইমেজ না পেলে পুরোনোটা রাখ
+  const defaultImage = image || existingProduct.default_image;
 
-  const {
-    title,
-    short_description,
-    description,
-    weight,
-    purchase_price,
-    price,
-    category_id,
-    subCategoryItem_id,
-  } = data;
+  // ✅ নতুন গ্যালারি ইমেজ না পেলে পুরোনোটা রাখ
+  const galleryImages =
+    images && images.length > 0
+      ? JSON.stringify(images.map((file) => file))
+      : existingProduct.gallery_images;
 
+  // ✅ ডেটা destructure করে আগের মান fallback হিসেবে দিচ্ছি
   const info = {
-    title,
-    short_description,
-    description,
-    weight,
-    purchase_price,
-    price,
-    category_id,
-    subCategoryItem_id,
-    default_image: image, // ✅ Store image directly
-    gallery_images: JSON.stringify(imageUrls), // ✅ Convert array to string
+    title: data.title || existingProduct.title,
+    short_description:
+      data.short_description || existingProduct.short_description,
+    description: data.description || existingProduct.description,
+    weight: data.weight || existingProduct.weight,
+    purchase_price: data.purchase_price || existingProduct.purchase_price,
+    price: data.price || existingProduct.price,
+    category_id: data.category_id || existingProduct.category_id,
+    subCategoryItem_id:
+      data.subCategoryItem_id || existingProduct.subCategoryItem_id,
+    default_image: defaultImage,
+    gallery_images: galleryImages,
     product_type: "arrival",
   };
 
-  const result = await Product.update(info, {
-    where: {
-      id: id,
-    },
-  });
+  console.log("ProductData:", info);
+
+  // ✅ এখন ডাটাবেজে আপডেট করো
+  const result = await Product.update(info, { where: { id } });
 
   return result;
 };
