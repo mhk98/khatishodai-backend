@@ -5,21 +5,22 @@ const Order = db.order;
 const Cart = db.cart;
 
 const insertIntoDB = async (data) => {
-  const t = await db.sequelize.transaction();
+  // const t = await db.sequelize.transaction();
 
   // const result = await Order.create(data);
 
   // 1. Order create
-  const result = await Order.create(data, { transaction: t });
+  // const result = await Order.create(data, { transaction: t });
+  const result = await Order.create(data);
 
   // 2. Order create সফল হলে cart clear করা (user_id দিয়ে filter)
-  await Cart.destroy({
-    where: { user_id: data.user_id },
-    transaction: t,
-  });
+  // await Cart.destroy({
+  //   where: { user_id: data.user_id },
+  //   transaction: t,
+  // });
 
-  // 3. সব ঠিক থাকলে commit
-  await t.commit();
+  // // 3. সব ঠিক থাকলে commit
+  // await t.commit();
 
   console.log("Order created & cart cleared:", result);
   return result;
@@ -84,15 +85,16 @@ const getAllFromDB = async (options) => {
   };
 };
 
+
 const getDataById = async (id) => {
   const result = await Order.findOne({
-    where: {
-      user_id: id,
-    },
+    where: { user_id: id },
+    order: [['id', 'DESC']], // সবচেয়ে বড় id = latest order
   });
 
   return result;
 };
+
 
 const getOrderTrackById = async (id) => {
   const result = await Order.findOne({

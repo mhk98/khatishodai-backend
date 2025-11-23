@@ -3,15 +3,13 @@
 //     "Order",
 //     {
 //       id: {
-//         type: DataTypes.INTEGER,
+//         type: DataTypes.STRING, // use STRING, not INTEGER
 //         primaryKey: true,
-//         autoIncrement: true,
-//         allowNull: false,
 //       },
 //       cartProducts: {
-//         type: DataTypes.JSON, // JSON data type for storing complex data
+//         type: DataTypes.JSON,
 //         allowNull: false,
-//         defaultValue: {}, // Default value as an empty object
+//         defaultValue: {},
 //         get() {
 //           return JSON.parse(this.getDataValue("cartProducts"));
 //         },
@@ -29,61 +27,73 @@
 //       },
 //       address: {
 //         type: DataTypes.TEXT,
-//         allowNull: true, // Make optional as it's marked optional in the form
+//         allowNull: true,
 //       },
 //       city: {
 //         type: DataTypes.STRING,
 //         allowNull: false,
 //       },
-
 //       paymentMethod: {
 //         type: DataTypes.STRING,
-//         allowNull: true, // Ensures it's required
+//         allowNull: true,
 //       },
-
 //       orderStatus: {
 //         type: DataTypes.STRING,
-//         allowNull: false, // Ensures it's required
+//         allowNull: false,
 //         defaultValue: "Processing",
 //       },
-
 //       emailOrPhone: {
 //         type: DataTypes.STRING,
 //         allowNull: false,
 //         validate: {
-//           notEmpty: true, // Ensure the field is not empty
+//           notEmpty: true,
 //         },
 //       },
 //       postalCode: {
-//         type: DataTypes.STRING, // Use STRING instead of INTEGER for flexibility
+//         type: DataTypes.STRING,
 //         allowNull: false,
 //       },
 //       keepUpdate: {
-//         type: DataTypes.BOOLEAN, // Corrected from Boolean to BOOLEAN
+//         type: DataTypes.BOOLEAN,
 //         allowNull: false,
 //         defaultValue: false,
 //       },
 //       saveInfo: {
-//         type: DataTypes.BOOLEAN, // Corrected from Boolean to BOOLEAN
+//         type: DataTypes.BOOLEAN,
 //         allowNull: false,
 //         defaultValue: false,
 //       },
-//       // subTotal: {
-//       //     type: DataTypes.INTEGER,
-//       //     allowNull: false,
-//       // },
 //       total: {
 //         type: DataTypes.INTEGER,
 //         allowNull: false,
 //       },
 //     },
 //     {
-//       timestamps: true, // Enable createdAt and updatedAt fields
+//       timestamps: true,
+//       hooks: {
+//         // Generate custom ID before creating
+//         async beforeCreate(order) {
+//           const lastOrder = await Order.findOne({
+//             order: [["createdAt", "DESC"]],
+//           });
+
+//           let nextNumber = 1;
+//           if (lastOrder && lastOrder.id) {
+//             const lastNumber = parseInt(lastOrder.id.replace("KS", ""), 10);
+//             if (!isNaN(lastNumber)) {
+//               nextNumber = lastNumber + 1;
+//             }
+//           }
+
+//           order.id = "KS" + String(nextNumber).padStart(3, "0");
+//         },
+//       },
 //     }
 //   );
 
 //   return Order;
 // };
+
 
 module.exports = (sequelize, DataTypes) => {
   const Order = sequelize.define(
@@ -106,11 +116,11 @@ module.exports = (sequelize, DataTypes) => {
       },
       firstName: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       lastName: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       address: {
         type: DataTypes.TEXT,
@@ -118,7 +128,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       city: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       paymentMethod: {
         type: DataTypes.STRING,
@@ -131,14 +141,11 @@ module.exports = (sequelize, DataTypes) => {
       },
       emailOrPhone: {
         type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          notEmpty: true,
-        },
+        allowNull: true,
       },
       postalCode: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       keepUpdate: {
         type: DataTypes.BOOLEAN,
@@ -149,6 +156,14 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false,
+      },
+      discount: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      subTotal: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
       },
       total: {
         type: DataTypes.INTEGER,
